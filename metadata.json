@@ -1,0 +1,6 @@
+{
+  "name": "FarmDirect",
+  "description": "Production-ready direct farmer-to-buyer agricultural marketplace with price transparency, logistics, market intelligence, and AI advisory.",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
