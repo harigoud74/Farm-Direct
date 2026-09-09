@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { Order } from '../types';
 import { formatINR } from '../utils/pricing';
+import { useLanguage } from '../context/LanguageContext';
 
 interface OrderTrackingModalProps {
   order: Order;
@@ -25,16 +26,17 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({
   onClose,
   onRateOrder
 }) => {
+  const { t, translateCrop, translateStatus } = useLanguage();
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState('');
   const [rated, setRated] = useState(false);
 
   const steps = [
-    { label: 'Order Placed & Escrow Secured', status: 'PAID', time: '10:14 AM' },
-    { label: 'Harvest Confirmed by Farmer', status: 'ACCEPTED', time: '10:30 AM' },
-    { label: 'Grading & Crate Packing', status: 'PREPARING', time: '11:15 AM' },
-    { label: 'Picked Up by Cold Chain Van', status: 'IN_TRANSIT', time: '12:00 PM' },
-    { label: 'Delivered Fresh to Doorstep', status: 'DELIVERED', time: '02:45 PM' }
+    { label: t('orderConfirmation'), status: 'PAID', time: '10:14 AM' },
+    { label: t('markAtFarm'), status: 'ACCEPTED', time: '10:30 AM' },
+    { label: t('markPreparing'), status: 'PREPARING', time: '11:15 AM' },
+    { label: t('markInTransit'), status: 'IN_TRANSIT', time: '12:00 PM' },
+    { label: t('deliveredAndSettled'), status: 'DELIVERED', time: '02:45 PM' }
   ];
 
   const getStepStatus = (stepIndex: number) => {
@@ -61,9 +63,9 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({
         <div className="px-6 py-4 border-b border-stone-200 flex items-center justify-between">
           <div>
             <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded">
-              Live Order Journey
+              {t('liveOrderTracking')}
             </span>
-            <h3 className="text-base font-bold text-stone-900 mt-0.5">Order #{order.id}</h3>
+            <h3 className="text-base font-bold text-stone-900 mt-0.5">{t('orderNumber')} #{order.id}</h3>
           </div>
           <button
             onClick={onClose}
@@ -77,16 +79,16 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({
           {/* OTP & Delivery ETA Card */}
           <div className="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200 rounded-2xl p-4 flex items-center justify-between">
             <div>
-              <span className="text-xs text-stone-500 font-medium block">Expected Arrival</span>
+              <span className="text-xs text-stone-500 font-medium block">{t('estimatedDeliveryTime')}</span>
               <span className="text-sm font-bold text-stone-900">{order.estimatedDeliveryTime}</span>
               <p className="text-[11px] text-emerald-800 font-semibold mt-1">
-                Logistics Partner: {order.logisticsPartnerName || 'Suresh Kumar (Electric Reefer KA-04)'}
+                {t('driverAssigned')}: {order.logisticsPartnerName || 'Suresh Kumar (Electric Reefer KA-04)'}
               </p>
             </div>
 
             <div className="text-right bg-white p-3 rounded-xl border border-emerald-200 shadow-xs">
               <span className="text-[10px] text-stone-400 font-bold block uppercase tracking-wider">
-                Delivery Verification OTP
+                {t('deliveryOtpLabel')}
               </span>
               <span className="text-xl font-mono font-extrabold text-emerald-950 tracking-widest">
                 {order.deliveryProofOtp || '4829'}
@@ -97,7 +99,7 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({
           {/* Timeline */}
           <div className="space-y-4">
             <h4 className="text-xs font-bold text-stone-900 uppercase tracking-wider">
-              Harvest & Transit Timeline
+              {t('orderMilestones')}
             </h4>
             <div className="relative pl-6 space-y-6 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-stone-200">
               {steps.map((step, idx) => {
@@ -121,7 +123,7 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({
                           {step.label}
                         </span>
                         <span className="text-[11px] text-stone-400">
-                          {state === 'completed' ? 'Verified by dispatch' : state === 'current' ? 'Currently in progress' : 'Upcoming phase'}
+                          {state === 'completed' ? t('verifiedBadge') : state === 'current' ? t('markInTransit') : t('pendingVerification')}
                         </span>
                       </div>
                     </div>
@@ -134,13 +136,13 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({
 
           {/* Items in this order */}
           <div className="p-4 bg-stone-50 border border-stone-200 rounded-2xl space-y-2">
-            <h5 className="text-xs font-bold text-stone-800">Fresh Produce in this Batch:</h5>
+            <h5 className="text-xs font-bold text-stone-800">{t('myInventory')}:</h5>
             <div className="divide-y divide-stone-200">
               {order.items.map(item => (
                 <div key={item.productId} className="py-2 flex justify-between text-xs">
                   <div>
-                    <span className="font-semibold text-stone-900">{item.productName}</span>
-                    <span className="text-stone-500 block text-[11px]">Farm: {item.farmerName}</span>
+                    <span className="font-semibold text-stone-900">{translateCrop(item.productName)}</span>
+                    <span className="text-stone-500 block text-[11px]">{t('farmOrigin')}: {item.farmerName}</span>
                   </div>
                   <div className="text-right">
                     <span className="font-bold text-stone-900">{item.quantityKg} kg</span>
@@ -156,11 +158,11 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({
             <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl space-y-3">
               <h5 className="text-xs font-bold text-emerald-950 flex items-center gap-1.5">
                 <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
-                Rate Produce Quality & Farmer
+                {t('rateProduce')}
               </h5>
               {rated ? (
                 <p className="text-xs text-emerald-800 font-semibold">
-                  Thank you! Your feedback has been verified and added to the farmer's transparency score.
+                  {t('ratingSuccess')}
                 </p>
               ) : (
                 <form onSubmit={handleReviewSubmit} className="space-y-2 text-xs">
@@ -180,14 +182,14 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({
                     rows={2}
                     value={comment}
                     onChange={e => setComment(e.target.value)}
-                    placeholder="Describe freshness, taste, and farm packaging quality..."
+                    placeholder={t('reviewPlaceholder')}
                     className="w-full p-2 bg-white border border-emerald-200 rounded-xl text-xs focus:outline-none"
                   ></textarea>
                   <button
                     type="submit"
-                    className="px-4 py-1.5 bg-emerald-700 text-white rounded-lg font-bold text-xs cursor-pointer"
+                    className="px-4 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg font-bold text-xs cursor-pointer"
                   >
-                    Submit Verified Review
+                    {t('submitRating')}
                   </button>
                 </form>
               )}
@@ -197,15 +199,16 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({
 
         {/* Footer */}
         <div className="px-6 py-4 border-t border-stone-200 bg-stone-50 flex justify-between items-center text-xs">
-          <span className="text-stone-500">Need support? Contact 24/7 Agro Helpdesk</span>
+          <span className="text-stone-500">FarmDirect 24/7 Agro Support</span>
           <button
             onClick={onClose}
             className="px-4 py-2 bg-stone-200 hover:bg-stone-300 text-stone-800 font-semibold rounded-xl cursor-pointer"
           >
-            Close Tracker
+            {t('close')}
           </button>
         </div>
       </div>
     </div>
   );
 };
+

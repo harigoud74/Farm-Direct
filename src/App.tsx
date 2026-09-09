@@ -49,11 +49,14 @@ import { MarketIntelligenceView } from './components/MarketIntelligenceView';
 import { WeatherDashboard } from './components/WeatherDashboard';
 import { AIAssistantModal } from './components/AIAssistantModal';
 import { ImpactModal } from './components/ImpactModal';
+import { useLanguage } from './context/LanguageContext';
 
 export default function App() {
+  // Localization
+  const { language, setLanguage, t, translateCrop, translateStatus } = useLanguage();
+
   // Core state
   const [currentRole, setCurrentRole] = useState<UserRole>('consumer');
-  const [language, setLanguage] = useState<LanguageCode>('en');
   const [activeTab, setActiveTab] = useState<string>('marketplace');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -486,19 +489,19 @@ export default function App() {
           <div className="bg-white border border-stone-200 rounded-3xl p-6 shadow-xs space-y-4">
             <div className="flex items-center justify-between pb-4 border-b border-stone-100">
               <div>
-                <h2 className="text-xl font-bold text-stone-900">Your Orders & Deliveries</h2>
+                <h2 className="text-xl font-bold text-stone-900">{t('myOrders')}</h2>
                 <p className="text-xs text-stone-500">
-                  Track real-time harvest and cold-chain transit directly from farms.
+                  {t('trackLiveOrders')}
                 </p>
               </div>
               <span className="text-xs font-bold text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full">
-                {orders.length} Orders Logged
+                {orders.length} {t('myOrders')}
               </span>
             </div>
 
             {orders.length === 0 ? (
               <div className="text-center py-16 text-xs text-stone-500">
-                No orders placed yet. Explore fresh produce from the marketplace.
+                {t('noOrders')}
               </div>
             ) : (
               <div className="divide-y divide-stone-100">
@@ -506,23 +509,23 @@ export default function App() {
                   <div key={order.id} className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-bold text-stone-900">Order #{order.id}</span>
+                        <span className="text-sm font-bold text-stone-900">{t('orderNumber')} #{order.id}</span>
                         <span className="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full uppercase">
-                          {order.status}
+                          {translateStatus(order.status)}
                         </span>
                         <span className="text-xs text-stone-400">&bull; {order.createdAt}</span>
                       </div>
                       <p className="text-xs text-stone-600 mt-1">
-                        {order.items.map(i => `${i.productName} (${i.quantityKg}kg)`).join(', ')}
+                        {order.items.map(i => `${translateCrop(i.productName)} (${i.quantityKg}kg)`).join(', ')}
                       </p>
                       <span className="text-[11px] text-stone-400">
-                        Delivery Slot: {order.estimatedDeliveryTime}
+                        {t('estimatedDeliveryTime')}: {order.estimatedDeliveryTime}
                       </span>
                     </div>
 
                     <div className="flex items-center gap-3">
                       <div className="text-right">
-                        <span className="text-[10px] text-stone-400 block">Total Paid</span>
+                        <span className="text-[10px] text-stone-400 block">{t('totalCost')}</span>
                         <span className="text-base font-bold text-emerald-950">
                           {formatINR(order.totalPaid)}
                         </span>
@@ -531,7 +534,7 @@ export default function App() {
                         onClick={() => setTrackingOrder(order)}
                         className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer"
                       >
-                        Live Tracking & OTP
+                        {t('liveOrderTracking')}
                       </button>
                     </div>
                   </div>
@@ -540,6 +543,7 @@ export default function App() {
             )}
           </div>
         )}
+
 
         {/* Farmer Dashboard Views */}
         {(activeTab === 'dashboard' || activeTab === 'inventory' || activeTab === 'bulk-leads') && currentRole === 'farmer' && (
@@ -675,15 +679,15 @@ export default function App() {
           <div className="flex items-center gap-2">
             <Sprout className="w-4 h-4 text-emerald-700" />
             <span className="font-bold text-stone-800">FarmDirect</span>
-            <span>&bull; Direct Farmer-to-Buyer Marketplace &bull; 100% Fair Trade</span>
+            <span>&bull; {t('tagline')} &bull; {t('fairTradeCertified')}</span>
           </div>
 
           <div className="flex items-center gap-4 text-[11px]">
-            <span>Payments: Razorpay Escrow (Test Mode)</span>
+            <span>{t('escrowSecure')}</span>
             <span>&bull;</span>
-            <span>Mandi Feed: AGMARKNET Official</span>
+            <span>{t('officialGovNotice')}</span>
             <span>&bull;</span>
-            <span>Zero Intermediaries</span>
+            <span>{t('middlemenEliminatedText')}</span>
           </div>
         </div>
       </footer>

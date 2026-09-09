@@ -15,12 +15,13 @@ import {
 } from 'lucide-react';
 import { UserRole, LanguageCode, User } from '../types';
 import { TRANSLATIONS } from '../data/translations';
+import { useLanguage } from '../context/LanguageContext';
 
 interface NavbarProps {
   currentRole: UserRole;
   onRoleChange: (role: UserRole) => void;
-  language: LanguageCode;
-  onLanguageChange: (lang: LanguageCode) => void;
+  language?: LanguageCode;
+  onLanguageChange?: (lang: LanguageCode) => void;
   cartCount: number;
   onOpenCart: () => void;
   onOpenAIAssistant: () => void;
@@ -33,7 +34,7 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({
   currentRole,
   onRoleChange,
-  language,
+  language: propLanguage,
   onLanguageChange,
   cartCount,
   onOpenCart,
@@ -44,7 +45,16 @@ export const Navbar: React.FC<NavbarProps> = ({
   onTabChange
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const t = TRANSLATIONS[language] || TRANSLATIONS.en;
+  const { language: contextLanguage, setLanguage: setContextLanguage, t: tFunc } = useLanguage();
+  const currentLang = propLanguage || contextLanguage;
+  const t = TRANSLATIONS[currentLang] || TRANSLATIONS.en;
+
+  const handleLanguageSwitch = (newLang: LanguageCode) => {
+    setContextLanguage(newLang);
+    if (onLanguageChange) {
+      onLanguageChange(newLang);
+    }
+  };
 
   const roleConfigs: { role: UserRole; label: string; icon: any; color: string }[] = [
     { role: 'consumer', label: t.consumerRole, icon: ShoppingCart, color: 'emerald' },
@@ -53,6 +63,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     { role: 'logistics', label: t.logisticsRole, icon: Truck, color: 'amber' },
     { role: 'admin', label: t.adminRole, icon: ShieldCheck, color: 'purple' }
   ];
+
 
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-stone-200 shadow-xs">
@@ -115,7 +126,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       : 'text-stone-600 hover:text-stone-900'
                   }`}
                 >
-                  Nearby Farms Map
+                  {t.navFarmsMap || 'Farms Map'}
                 </button>
                 <button
                   onClick={() => onTabChange('transparency')}
@@ -150,7 +161,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       : 'text-stone-600 hover:text-stone-900'
                   }`}
                 >
-                  Farmer Dashboard
+                  {t.navDashboard || 'Farmer Dashboard'}
                 </button>
                 <button
                   onClick={() => onTabChange('inventory')}
@@ -170,7 +181,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       : 'text-stone-600 hover:text-stone-900'
                   }`}
                 >
-                  {t.marketPrices}
+                  {t.mandiIntelligence || t.marketPrices}
                 </button>
                 <button
                   onClick={() => onTabChange('bulk-leads')}
@@ -180,7 +191,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       : 'text-stone-600 hover:text-stone-900'
                   }`}
                 >
-                  Restaurant Bulk Leads
+                  {t.navBulkLeads || 'B2B Leads'}
                 </button>
               </>
             )}
@@ -195,7 +206,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       : 'text-stone-600 hover:text-stone-900'
                   }`}
                 >
-                  Bulk Procurement
+                  {t.navB2BProcurement || 'Bulk Procurement'}
                 </button>
                 <button
                   onClick={() => onTabChange('marketplace')}
@@ -205,7 +216,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       : 'text-stone-600 hover:text-stone-900'
                   }`}
                 >
-                  Browse Catalog
+                  {t.exploreProduce}
                 </button>
                 <button
                   onClick={() => onTabChange('orders')}
@@ -215,7 +226,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       : 'text-stone-600 hover:text-stone-900'
                   }`}
                 >
-                  Invoices & Orders
+                  {t.navOrders || t.orders}
                 </button>
               </>
             )}
@@ -225,7 +236,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 onClick={() => onTabChange('logistics-tasks')}
                 className="px-3 py-1.5 rounded-lg text-sm font-semibold bg-white text-amber-900 shadow-xs"
               >
-                Logistics Dispatch Hub
+                {t.navLogistics || 'Logistics Dispatch Hub'}
               </button>
             )}
 
@@ -234,7 +245,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 onClick={() => onTabChange('admin-overview')}
                 className="px-3 py-1.5 rounded-lg text-sm font-semibold bg-white text-purple-900 shadow-xs"
               >
-                Platform Operations & Audit
+                {t.navAdmin || 'Platform Administration'}
               </button>
             )}
 
@@ -248,7 +259,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               title="Agro Weather Alerts"
             >
               <CloudSun className="w-4 h-4 text-amber-500" />
-              <span>Weather</span>
+              <span>{t.navWeather || 'Weather'}</span>
             </button>
           </nav>
 
@@ -258,7 +269,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <div className="relative group">
               <div className="flex items-center gap-1 bg-stone-100 hover:bg-stone-200/80 p-1 rounded-xl border border-stone-200 transition-colors">
                 <span className="text-[11px] font-semibold text-stone-500 pl-2 uppercase tracking-wider hidden lg:inline">
-                  Role:
+                  {t.switchRole}:
                 </span>
                 <select
                   value={currentRole}
@@ -279,8 +290,8 @@ export const Navbar: React.FC<NavbarProps> = ({
             <div className="flex items-center bg-stone-100 p-1 rounded-xl border border-stone-200">
               <Languages className="w-4 h-4 text-stone-500 ml-1.5" />
               <select
-                value={language}
-                onChange={e => onLanguageChange(e.target.value as LanguageCode)}
+                value={currentLang}
+                onChange={e => handleLanguageSwitch(e.target.value as LanguageCode)}
                 className="bg-transparent text-xs font-medium text-stone-700 py-1 px-2 focus:outline-none cursor-pointer"
                 aria-label="Select Language"
               >
@@ -348,7 +359,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               }}
               className="px-3 py-1.5 bg-stone-100 text-stone-800 rounded-lg text-xs font-medium"
             >
-              Farms Map
+              {t.navFarmsMap || 'Farms Map'}
             </button>
             <button
               onClick={() => {
@@ -366,7 +377,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               }}
               className="px-3 py-1.5 bg-stone-100 text-stone-800 rounded-lg text-xs font-medium"
             >
-              {t.marketPrices}
+              {t.mandiIntelligence || t.marketPrices}
             </button>
             <button
               onClick={() => {
@@ -375,7 +386,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               }}
               className="px-3 py-1.5 bg-stone-100 text-stone-800 rounded-lg text-xs font-medium"
             >
-              Agro Weather
+              {t.navWeather || 'Agro Weather'}
             </button>
           </div>
         </div>

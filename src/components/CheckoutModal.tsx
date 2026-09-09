@@ -15,6 +15,7 @@ import {
 import { CartItem, Order, User } from '../types';
 import { formatINR } from '../utils/pricing';
 import { api } from '../services/api';
+import { useLanguage } from '../context/LanguageContext';
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -31,6 +32,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   currentUser,
   onOrderPlaced
 }) => {
+  const { t, translateCrop } = useLanguage();
   const [addressLine, setAddressLine] = useState(currentUser?.address?.street || 'Flat 402, Green Glen Layout, Bellandur');
   const [city, setCity] = useState(currentUser?.address?.villageOrCity || 'Bengaluru');
   const [pinCode, setPinCode] = useState(currentUser?.address?.pinCode || '560103');
@@ -133,7 +135,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         <div className="px-6 py-4 border-b border-stone-200 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <ShieldCheck className="w-5 h-5 text-emerald-600" />
-            <h3 className="text-base font-bold text-stone-900">Secure Direct Checkout & Escrow Payment</h3>
+            <h3 className="text-base font-bold text-stone-900">{t('buyerEscrowProtection')}</h3>
           </div>
           <button
             onClick={onClose}
@@ -148,12 +150,12 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
           <div className="space-y-3">
             <h4 className="text-xs font-bold text-stone-900 uppercase tracking-wider flex items-center gap-1.5">
               <Truck className="w-4 h-4 text-emerald-600" />
-              1. Farm-to-Door Delivery Address
+              1. {t('shippingAddress')}
             </h4>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
               <div className="sm:col-span-2">
-                <label className="block text-stone-500 text-[11px] mb-1">Street Address / Apartment</label>
+                <label className="block text-stone-500 text-[11px] mb-1">{t('streetAddress')}</label>
                 <input
                   type="text"
                   value={addressLine}
@@ -163,7 +165,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
               </div>
 
               <div>
-                <label className="block text-stone-500 text-[11px] mb-1">City</label>
+                <label className="block text-stone-500 text-[11px] mb-1">{t('city')}</label>
                 <input
                   type="text"
                   value={city}
@@ -173,7 +175,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
               </div>
 
               <div>
-                <label className="block text-stone-500 text-[11px] mb-1">PIN Code</label>
+                <label className="block text-stone-500 text-[11px] mb-1">{t('pinCode')}</label>
                 <input
                   type="text"
                   value={pinCode}
@@ -183,7 +185,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
               </div>
 
               <div>
-                <label className="block text-stone-500 text-[11px] mb-1">Contact Phone (for delivery OTP)</label>
+                <label className="block text-stone-500 text-[11px] mb-1">{t('phoneNumber')}</label>
                 <input
                   type="text"
                   value={phone}
@@ -193,7 +195,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
               </div>
 
               <div>
-                <label className="block text-stone-500 text-[11px] mb-1">Preferred Delivery Slot</label>
+                <label className="block text-stone-500 text-[11px] mb-1">{t('estimatedDeliveryTime')}</label>
                 <select
                   value={deliverySlot}
                   onChange={e => setDeliverySlot(e.target.value)}
@@ -212,7 +214,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
             <div className="flex items-center justify-between">
               <h4 className="text-xs font-bold text-stone-900 uppercase tracking-wider flex items-center gap-1.5">
                 <CreditCard className="w-4 h-4 text-emerald-600" />
-                2. Razorpay Test Mode Payment Gateway
+                2. Razorpay Escrow Gateway
               </h4>
               <span className="text-[10px] font-bold bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full">
                 TEST ENVIRONMENT
@@ -280,7 +282,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     ))}
                   </div>
                   <div className="text-xs text-stone-500 flex items-center justify-between">
-                    <span>Simulated Virtual Payment Address:</span>
+                    <span>UPI ID:</span>
                     <strong className="text-stone-800">ananya@okhdfcbank</strong>
                   </div>
                 </div>
@@ -347,19 +349,19 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
           {/* Transparent Invoice Review */}
           <div className="p-4 bg-emerald-50/80 border border-emerald-200 rounded-2xl text-xs space-y-1.5">
             <div className="flex justify-between text-stone-600">
-              <span>Farmer Produce ({cartItems.length} items)</span>
+              <span>{t('farmerReceives')} ({cartItems.length} {t('freshHarvestItems')})</span>
               <span className="font-bold text-stone-900">{formatINR(totalProductAmount)}</span>
             </div>
             <div className="flex justify-between text-stone-600">
-              <span>Direct Cold-Chain Logistics</span>
+              <span>{t('logisticsFee')}</span>
               <span>{formatINR(totalLogisticsFee)}</span>
             </div>
             <div className="flex justify-between text-stone-600">
-              <span>Platform Fee (3%)</span>
+              <span>{t('platformFee')}</span>
               <span>{formatINR(totalPlatformFee)}</span>
             </div>
             <div className="flex justify-between text-stone-900 font-extrabold text-sm pt-2 border-t border-emerald-200">
-              <span>Total Payable</span>
+              <span>{t('totalPayable')}</span>
               <span className="text-emerald-950 text-base">{formatINR(grandTotal)}</span>
             </div>
           </div>
@@ -369,7 +371,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         <div className="px-6 py-4 border-t border-stone-200 bg-stone-50 flex items-center justify-between">
           <div className="text-[11px] text-stone-500 flex items-center gap-1">
             <Lock className="w-3.5 h-3.5 text-emerald-600" />
-            <span>256-bit SSL Encrypted &bull; Escrow Protection</span>
+            <span>256-bit SSL &bull; {t('buyerEscrowProtection')}</span>
           </div>
 
           <button
@@ -378,10 +380,10 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
             className="py-2.5 px-6 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs sm:text-sm shadow-md transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
           >
             {isProcessing ? (
-              <span>Verifying Signature & Settling...</span>
+              <span>{t('loading')}...</span>
             ) : (
               <>
-                <span>Pay {formatINR(grandTotal)} via Razorpay</span>
+                <span>{t('payWithRazorpay')} ({formatINR(grandTotal)})</span>
                 <ArrowRight className="w-4 h-4" />
               </>
             )}
@@ -391,3 +393,4 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
     </div>
   );
 };
+

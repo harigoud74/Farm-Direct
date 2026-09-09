@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { FarmerProfile, Product } from '../types';
 import { formatINR } from '../utils/pricing';
+import { useLanguage } from '../context/LanguageContext';
 
 interface FarmMapProps {
   farmers: FarmerProfile[];
@@ -24,6 +25,7 @@ export const FarmMap: React.FC<FarmMapProps> = ({
   onSelectProduct,
   onViewFarmer
 }) => {
+  const { t, translateCrop } = useLanguage();
   const [selectedFarmerId, setSelectedFarmerId] = useState<string>(farmers[0]?.id || 'farmer-1');
   const [radiusFilter, setRadiusFilter] = useState<number>(100);
 
@@ -31,10 +33,6 @@ export const FarmMap: React.FC<FarmMapProps> = ({
   const farmerProducts = products.filter(p => p.farmerId === selectedFarmerId);
 
   // Geographic coordinates mapped to SVG canvas relative to Bengaluru center (12.9716, 77.5946)
-  // Kolar: (13.1367, 78.1346) -> ~65km ENE
-  // Mandya: (12.4988, 76.6698) -> ~100km SW
-  // Nashik: (20.2015, 73.8372) -> ~800km NW (scaled)
-  // Tenali: (16.2437, 80.6400) -> ~500km NE (scaled)
   const mapPoints = [
     {
       id: 'buyer-bengaluru',
@@ -93,19 +91,19 @@ export const FarmMap: React.FC<FarmMapProps> = ({
           <div>
             <div className="flex items-center gap-2 text-xs font-bold text-emerald-800 uppercase tracking-wider">
               <Compass className="w-4 h-4 text-emerald-600" />
-              Geo-Spatial Farm Discovery
+              {t('geoRadar')}
             </div>
             <h2 className="text-xl font-bold text-stone-900 mt-1">
-              Interactive Regional Farm Locations & Food Miles
+              {t('geoRadar')} & Food Miles
             </h2>
             <p className="text-xs text-stone-500">
-              Discover verified farming clusters directly supplying fresh harvest to your urban zone.
+              {t('geoRadarDesc')}
             </p>
           </div>
 
           {/* Radius selector */}
           <div className="flex items-center gap-2 bg-stone-50 p-1.5 rounded-xl border border-stone-200 text-xs">
-            <span className="text-stone-500 font-medium pl-1">Max Radius:</span>
+            <span className="text-stone-500 font-medium pl-1">{t('distanceRadius')}:</span>
             {[50, 100, 250, 500].map(r => (
               <button
                 key={r}
@@ -166,7 +164,7 @@ export const FarmMap: React.FC<FarmMapProps> = ({
                 <circle r="16" fill="#059669" fillOpacity="0.3" className="animate-ping" />
                 <circle r="10" fill="#059669" stroke="#ffffff" strokeWidth="2" />
                 <text x="14" y="4" fill="#ffffff" fontSize="11" fontWeight="bold" fontFamily="sans-serif">
-                  You (Bengaluru)
+                  {t('consumerRole')} (Bengaluru)
                 </text>
               </g>
 
@@ -205,11 +203,11 @@ export const FarmMap: React.FC<FarmMapProps> = ({
             <div className="absolute bottom-3 left-3 bg-stone-900/90 backdrop-blur-xs border border-stone-800 text-stone-300 px-3 py-1.5 rounded-xl text-[11px] flex items-center gap-3">
               <span className="flex items-center gap-1.5">
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                Direct Farm Origin
+                {t('farmOrigin')}
               </span>
               <span className="flex items-center gap-1.5">
                 <span className="w-2.5 h-2.5 rounded-full bg-teal-400"></span>
-                Buyer Hub
+                {t('buyerRole')}
               </span>
             </div>
           </div>
@@ -238,28 +236,28 @@ export const FarmMap: React.FC<FarmMapProps> = ({
 
               <div className="grid grid-cols-2 gap-2 text-xs py-2 border-y border-stone-200/80">
                 <div>
-                  <span className="text-[10px] text-stone-400 block">Distance</span>
+                  <span className="text-[10px] text-stone-400 block">{t('distanceRadius')}</span>
                   <span className="font-bold text-stone-800">
                     {selectedFarmer?.address.district === 'Kolar' ? '42 km (Local)' : '78 km'}
                   </span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-stone-400 block">Farm Size</span>
-                  <span className="font-bold text-stone-800">{selectedFarmer?.farmSizeAcres} Acres</span>
+                  <span className="text-[10px] text-stone-400 block">{t('acreage')}</span>
+                  <span className="font-bold text-stone-800">{selectedFarmer?.farmSizeAcres} {t('acreage')}</span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-stone-400 block">Deliveries</span>
+                  <span className="text-[10px] text-stone-400 block">{t('myOrders')}</span>
                   <span className="font-bold text-stone-800">{selectedFarmer?.totalOrdersFulfilled}+ Orders</span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-stone-400 block">Fresh Guarantee</span>
-                  <span className="font-bold text-emerald-800">Same Day Harvest</span>
+                  <span className="text-[10px] text-stone-400 block">{t('harvestDate')}</span>
+                  <span className="font-bold text-emerald-800">{t('today')}</span>
                 </div>
               </div>
 
               <div>
                 <span className="text-xs font-bold text-stone-900 block mb-2">
-                  Active Harvest from this Farm ({farmerProducts.length} items):
+                  {t('myInventory')} ({farmerProducts.length}):
                 </span>
                 <div className="space-y-2 max-h-[160px] overflow-y-auto pr-1">
                   {farmerProducts.map(p => (
@@ -270,7 +268,7 @@ export const FarmMap: React.FC<FarmMapProps> = ({
                     >
                       <div className="flex items-center gap-2 truncate">
                         <img src={p.images[0]} alt={p.name} className="w-8 h-8 rounded-lg object-cover" />
-                        <span className="text-xs font-semibold text-stone-800 truncate">{p.name}</span>
+                        <span className="text-xs font-semibold text-stone-800 truncate">{translateCrop(p.name)}</span>
                       </div>
                       <span className="text-xs font-bold text-emerald-800 shrink-0">
                         {formatINR(p.pricePerKg)}/{p.unit}
@@ -285,7 +283,7 @@ export const FarmMap: React.FC<FarmMapProps> = ({
               onClick={() => onViewFarmer(selectedFarmer.id)}
               className="mt-4 w-full py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
             >
-              <span>View Verified Farm Certificate</span>
+              <span>{t('viewProfile')}</span>
               <ExternalLink className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -294,3 +292,4 @@ export const FarmMap: React.FC<FarmMapProps> = ({
     </div>
   );
 };
+

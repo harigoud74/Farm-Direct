@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { FarmerProfile, AuditLog, ImpactMetrics } from '../types';
 import { formatINR } from '../utils/pricing';
+import { useLanguage } from '../context/LanguageContext';
 
 interface AdminDashboardProps {
   analytics: any;
@@ -29,6 +30,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   impact,
   onVerifyFarmer
 }) => {
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<'OVERVIEW' | 'FARMERS' | 'AUDIT'>('OVERVIEW');
   const [filterFarmerQuery, setFilterFarmerQuery] = useState('');
 
@@ -45,13 +47,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         <div>
           <div className="flex items-center gap-2">
             <span className="bg-purple-100 text-purple-900 text-xs font-bold px-2.5 py-0.5 rounded-full">
-              Platform Governance & Compliance
+              {t('securityAudits')}
             </span>
-            <span className="text-xs text-stone-500">Fair Trade & Audit Oversight</span>
+            <span className="text-xs text-stone-500">{t('adminTitle')}</span>
           </div>
-          <h2 className="text-xl font-bold text-stone-900 mt-1">FarmDirect Operations Command Center</h2>
+          <h2 className="text-xl font-bold text-stone-900 mt-1">{t('adminTitle')}</h2>
           <p className="text-xs text-stone-500">
-            Monitor platform health, verify farmer credentials, and inspect immutable audit transactions.
+            {t('adminSubtitle')}
           </p>
         </div>
 
@@ -63,7 +65,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               activeTab === 'OVERVIEW' ? 'bg-white text-stone-900 shadow-xs' : 'text-stone-500'
             }`}
           >
-            System Metrics
+            {t('marketMetrics')}
           </button>
           <button
             onClick={() => setActiveTab('FARMERS')}
@@ -71,7 +73,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               activeTab === 'FARMERS' ? 'bg-white text-stone-900 shadow-xs' : 'text-stone-500'
             }`}
           >
-            Farmer Verifications ({farmers.length})
+            {t('verifiedFarms')} ({farmers.length})
           </button>
           <button
             onClick={() => setActiveTab('AUDIT')}
@@ -79,7 +81,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               activeTab === 'AUDIT' ? 'bg-white text-stone-900 shadow-xs' : 'text-stone-500'
             }`}
           >
-            Audit Logs ({auditLogs.length})
+            {t('auditLogsTitle')} ({auditLogs.length})
           </button>
         </div>
       </div>
@@ -89,27 +91,27 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           {/* Key Financial KPIs */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="bg-white border border-stone-200 rounded-2xl p-4 shadow-xs">
-              <span className="text-xs text-stone-500 font-medium">Platform GMV</span>
+              <span className="text-xs text-stone-500 font-medium">{t('gmv')}</span>
               <div className="text-2xl font-bold text-stone-900 mt-1">{formatINR(analytics.totalGmv || 428000)}</div>
-              <span className="text-[11px] text-emerald-700 font-medium">100% Escrow protected</span>
+              <span className="text-[11px] text-emerald-700 font-medium">{t('buyerEscrowProtection')}</span>
             </div>
 
             <div className="bg-white border border-stone-200 rounded-2xl p-4 shadow-xs">
-              <span className="text-xs text-stone-500 font-medium">Farmer Direct Payouts</span>
+              <span className="text-xs text-stone-500 font-medium">{t('farmerEarnings')}</span>
               <div className="text-2xl font-bold text-emerald-900 mt-1">{formatINR(analytics.farmerEarnings || 395000)}</div>
-              <span className="text-[11px] text-emerald-700 font-semibold">+66% above middlemen rate</span>
+              <span className="text-[11px] text-emerald-700 font-semibold">{t('farmerUpliftTotal')}</span>
             </div>
 
             <div className="bg-white border border-stone-200 rounded-2xl p-4 shadow-xs">
-              <span className="text-xs text-stone-500 font-medium">Platform Revenue (3% Fee)</span>
+              <span className="text-xs text-stone-500 font-medium">{t('platformFee')} (3%)</span>
               <div className="text-2xl font-bold text-stone-900 mt-1">{formatINR(analytics.platformFees || 12840)}</div>
-              <span className="text-[11px] text-stone-500">Transparent flat fee</span>
+              <span className="text-[11px] text-stone-500">{t('transparentPricingNotice')}</span>
             </div>
 
             <div className="bg-white border border-stone-200 rounded-2xl p-4 shadow-xs">
-              <span className="text-xs text-stone-500 font-medium">Customer Savings Generated</span>
+              <span className="text-xs text-stone-500 font-medium">{t('consumerSavingsTotal')}</span>
               <div className="text-2xl font-bold text-teal-800 mt-1">{formatINR(impact.totalBuyerSavingsRupees || 98000)}</div>
-              <span className="text-[11px] text-teal-700 font-medium">Saved vs supermarket markup</span>
+              <span className="text-[11px] text-teal-700 font-medium">{t('buyerSaves')} vs Mandi</span>
             </div>
           </div>
 
@@ -117,20 +119,20 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           <div className="bg-white border border-stone-200 rounded-3xl p-6 shadow-xs space-y-4">
             <h3 className="text-base font-bold text-stone-900 flex items-center gap-2">
               <ShieldCheck className="w-5 h-5 text-emerald-600" />
-              Direct Trade Governance & Standards
+              {t('securityAudits')}
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
               <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl">
-                <span className="font-bold text-emerald-950 block">AGMARKNET Mandi Synced</span>
-                <span className="text-emerald-800 text-[11px]">Official market prices updated automatically every 4 hours from Agmarknet Kolar, Azadpur & Lasalgaon.</span>
+                <span className="font-bold text-emerald-950 block">{t('officialGovNotice')}</span>
+                <span className="text-emerald-800 text-[11px]">{t('mandiSubtitle')}</span>
               </div>
               <div className="p-4 bg-blue-50 border border-blue-200 rounded-2xl">
-                <span className="font-bold text-blue-950 block">Payment Escrow Guarantee</span>
-                <span className="text-blue-800 text-[11px]">Consumer funds held in escrow and released to farmer instantly upon verified delivery OTP.</span>
+                <span className="font-bold text-blue-950 block">{t('buyerEscrowProtection')}</span>
+                <span className="text-blue-800 text-[11px]">{t('escrowNotice')}</span>
               </div>
               <div className="p-4 bg-purple-50 border border-purple-200 rounded-2xl">
-                <span className="font-bold text-purple-950 block">Zero Commission Agents</span>
-                <span className="text-purple-800 text-[11px]">4 intermediary markup layers bypassed entirely. Verified food miles: -42% average carbon reduction.</span>
+                <span className="font-bold text-purple-950 block">{t('intermediariesEliminated')}</span>
+                <span className="text-purple-800 text-[11px]">{t('savingsBanner')}</span>
               </div>
             </div>
           </div>
@@ -141,13 +143,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         <div className="bg-white border border-stone-200 rounded-3xl p-6 shadow-xs space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <h3 className="text-base font-bold text-stone-900">
-              Registered Farmer Verification Management ({farmers.length})
+              {t('verifiedFarms')} ({farmers.length})
             </h3>
             <div className="relative max-w-xs w-full">
               <Search className="w-4 h-4 text-stone-400 absolute left-3 top-2.5" />
               <input
                 type="text"
-                placeholder="Filter farmers..."
+                placeholder={t('searchFilter')}
                 value={filterFarmerQuery}
                 onChange={e => setFilterFarmerQuery(e.target.value)}
                 className="w-full pl-9 pr-3 py-1.5 bg-stone-50 border border-stone-300 rounded-xl text-xs"
@@ -168,11 +170,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                       <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
                         farmer.verified ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
                       }`}>
-                        {farmer.verified ? 'Verified Active' : 'Pending Review'}
+                        {farmer.verified ? t('verifiedBadge') : t('pendingVerification')}
                       </span>
                     </div>
                     <p className="text-xs text-stone-500">
-                      Farmer: {farmer.name} &bull; {farmer.address.district}, {farmer.address.state} &bull; {farmer.farmSizeAcres} Acres
+                      {t('farmerLabel')}: {farmer.name} &bull; {farmer.address.district}, {farmer.address.state} &bull; {farmer.farmSizeAcres} {t('totalAcreage')}
                     </p>
                     <div className="flex gap-1.5 mt-1">
                       {farmer.badges.map((b, i) => (
@@ -190,14 +192,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                       onClick={() => onVerifyFarmer(farmer.id, false)}
                       className="px-3 py-1.5 border border-red-300 text-red-700 hover:bg-red-50 rounded-xl text-xs font-semibold cursor-pointer"
                     >
-                      Suspend Verification
+                      {t('pendingVerification')}
                     </button>
                   ) : (
                     <button
                       onClick={() => onVerifyFarmer(farmer.id, true)}
                       className="px-4 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold cursor-pointer"
                     >
-                      Approve & Verify
+                      {t('approveKyc')}
                     </button>
                   )}
                 </div>
@@ -212,7 +214,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           <div className="flex items-center justify-between pb-3 border-b border-stone-100">
             <h3 className="text-base font-bold text-stone-900 flex items-center gap-2">
               <FileText className="w-4 h-4 text-emerald-700" />
-              Immutable Transaction & System Audit Trail
+              {t('auditLogsTitle')}
             </h3>
             <span className="text-xs text-stone-400">Cryptographically logged</span>
           </div>
@@ -252,3 +254,4 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     </div>
   );
 };
+

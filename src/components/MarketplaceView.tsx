@@ -17,6 +17,7 @@ import {
 import { Product, ProduceCategory, FarmerProfile } from '../types';
 import { formatINR } from '../utils/pricing';
 import { PriceTransparencyCard } from './PriceTransparencyCard';
+import { useLanguage } from '../context/LanguageContext';
 
 interface MarketplaceViewProps {
   products: Product[];
@@ -33,6 +34,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
   onAddToCart,
   onViewFarmerProfile
 }) => {
+  const { t, translateCrop, translateCategory } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [maxDistanceKm, setMaxDistanceKm] = useState<number>(100);
@@ -64,7 +66,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
 
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
-        const matchesName = p.name.toLowerCase().includes(q);
+        const matchesName = p.name.toLowerCase().includes(q) || translateCrop(p.name).toLowerCase().includes(q);
         const matchesVariety = p.variety.toLowerCase().includes(q);
         const matchesFarmer = p.farmerName.toLowerCase().includes(q);
         const matchesDistrict = p.farmerLocation.district.toLowerCase().includes(q);
@@ -75,7 +77,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
 
       return true;
     });
-  }, [products, selectedCategory, organicOnly, selectedGrade, freshOnly, maxDistanceKm, searchQuery]);
+  }, [products, selectedCategory, organicOnly, selectedGrade, freshOnly, maxDistanceKm, searchQuery, translateCrop]);
 
   return (
     <div className="space-y-6">
@@ -85,13 +87,13 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
         <div className="relative z-10 max-w-3xl">
           <div className="inline-flex items-center gap-2 bg-emerald-800/80 border border-emerald-600/40 text-emerald-200 text-xs font-semibold px-3 py-1 rounded-full mb-3">
             <Sparkles className="w-3.5 h-3.5 text-emerald-300" />
-            <span>Zero Middlemen &bull; 100% Traceable to Farm Origin</span>
+            <span>{t('heroBadge')}</span>
           </div>
           <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-white mb-2">
-            Buy Direct from Indian Farmers.
+            {t('heroTitle')}
           </h1>
           <p className="text-sm sm:text-base text-emerald-100/90 mb-6 leading-relaxed">
-            Fresh harvest delivered directly from Kolar, Mandya, Nashik, and Guntur. Farmers receive +40–66% higher margins while you save 20–30% compared to supermarket markups.
+            {t('heroSubtitle')}
           </p>
 
           {/* Search Input Bar */}
@@ -101,15 +103,15 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
               type="text"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              placeholder="Search tomatoes, onions, capsicum, farmer name, or district..."
+              placeholder={t('searchPlaceholder')}
               className="w-full pl-12 pr-4 py-3.5 bg-white text-stone-900 placeholder-stone-400 rounded-2xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-400 shadow-lg"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-3 px-2 py-1 text-xs text-stone-400 hover:text-stone-600"
+                className="absolute right-3 px-2 py-1 text-xs text-stone-400 hover:text-stone-600 cursor-pointer"
               >
-                Clear
+                {t('clear')}
               </button>
             )}
           </div>
@@ -128,7 +130,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                 : 'bg-white text-stone-600 hover:bg-stone-100 border border-stone-200'
             }`}
           >
-            {cat}
+            {translateCategory(cat)}
           </button>
         ))}
       </div>
@@ -138,7 +140,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
         <div className="flex flex-wrap items-center gap-3">
           <span className="flex items-center gap-1.5 font-bold text-stone-900">
             <SlidersHorizontal className="w-4 h-4 text-emerald-700" />
-            Filters:
+            {t('filterBy')}:
           </span>
 
           {/* Organic checkbox button */}
@@ -151,7 +153,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
             }`}
           >
             <Leaf className="w-3.5 h-3.5 text-emerald-600" />
-            Organic / Natural
+            {t('organicOnly')}
           </button>
 
           {/* Freshness toggle */}
@@ -164,21 +166,21 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
             }`}
           >
             <Clock className="w-3.5 h-3.5 text-teal-600" />
-            Harvested &lt; 48 hrs
+            {t('freshness48h')}
           </button>
 
           {/* Grade filter */}
           <div className="flex items-center gap-1 bg-stone-50 border border-stone-200 rounded-lg px-2 py-1">
-            <span className="text-stone-500 text-[11px]">Grade:</span>
+            <span className="text-stone-500 text-[11px]">{t('gradeFilter')}:</span>
             <select
               value={selectedGrade}
               onChange={e => setSelectedGrade(e.target.value)}
               className="bg-transparent text-stone-800 text-xs font-semibold focus:outline-none cursor-pointer"
             >
-              <option value="All">All Grades</option>
-              <option value="Export">A Grade Export</option>
-              <option value="Premium">Premium</option>
-              <option value="Organic">Organic Certified</option>
+              <option value="All">{t('allGrades')}</option>
+              <option value="Export">{t('exportGrade')}</option>
+              <option value="Premium">{t('premiumGrade')}</option>
+              <option value="Organic">{t('organicCertified')}</option>
             </select>
           </div>
         </div>
@@ -188,8 +190,8 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
           <MapPin className="w-4 h-4 text-emerald-600" />
           <div className="flex-1">
             <div className="flex justify-between text-[11px] text-stone-500 mb-1">
-              <span>Farm Distance:</span>
-              <span className="font-bold text-stone-900">{maxDistanceKm} km radius</span>
+              <span>{t('farmDistance')}:</span>
+              <span className="font-bold text-stone-900">{maxDistanceKm} {t('kmRadius')}</span>
             </div>
             <input
               type="range"
@@ -207,11 +209,11 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
       {/* Results Count Header */}
       <div className="flex items-center justify-between text-xs text-stone-500">
         <span>
-          Showing <strong className="text-stone-900">{filteredProducts.length}</strong> fresh harvest produce items
+          {t('showingProduceCount')} <strong className="text-stone-900">{filteredProducts.length}</strong> {t('freshHarvestItems')}
         </span>
         <span className="text-emerald-700 font-semibold flex items-center gap-1">
           <ShieldCheck className="w-3.5 h-3.5" />
-          All prices verified against official Mandi benchmarks
+          {t('mandiVerifiedNotice')}
         </span>
       </div>
 
@@ -221,9 +223,9 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
           <div className="w-16 h-16 bg-stone-100 rounded-2xl flex items-center justify-center mx-auto mb-4 text-stone-400">
             <Search className="w-8 h-8" />
           </div>
-          <h3 className="text-lg font-bold text-stone-900 mb-1">No farm produce matches your criteria</h3>
+          <h3 className="text-lg font-bold text-stone-900 mb-1">{t('noProduceMatch')}</h3>
           <p className="text-xs text-stone-500 mb-6">
-            Try expanding the distance slider or clearing some filter tags to explore produce from other nearby agricultural clusters.
+            {t('noProduceMatchDesc')}
           </p>
           <button
             onClick={() => {
@@ -236,7 +238,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
             }}
             className="px-4 py-2 bg-emerald-700 text-white rounded-xl text-xs font-semibold hover:bg-emerald-800 transition-colors cursor-pointer"
           >
-            Reset All Filters
+            {t('resetFilters')}
           </button>
         </div>
       )}
@@ -246,6 +248,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
         {filteredProducts.map(product => {
           const isExpanded = expandedTransparencyId === product.id;
           const simulatedDistance = product.farmerLocation.district === 'Kolar' ? 42 : product.farmerLocation.district === 'Mandya' ? 78 : 120;
+          const translatedName = translateCrop(product.name);
 
           return (
             <div
@@ -256,7 +259,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
               <div className="relative aspect-4/3 overflow-hidden bg-stone-100">
                 <img
                   src={product.images[0]}
-                  alt={product.name}
+                  alt={translatedName}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   loading="lazy"
                 />
@@ -264,7 +267,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                   {product.isOrganic && (
                     <span className="bg-emerald-900/90 backdrop-blur-xs text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 shadow-xs">
                       <Leaf className="w-3 h-3 text-emerald-400" />
-                      Organic
+                      {t('organicBadge')}
                     </span>
                   )}
                   <span className="bg-stone-900/80 backdrop-blur-xs text-white text-[10px] font-semibold px-2 py-0.5 rounded-full shadow-xs">
@@ -301,7 +304,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                     onClick={() => onSelectProduct(product)}
                     className="text-base font-bold text-stone-900 hover:text-emerald-800 transition-colors cursor-pointer line-clamp-1"
                   >
-                    {product.name}
+                    {translatedName}
                   </h3>
                   <p className="text-xs text-stone-500 line-clamp-2 mt-1 mb-3">
                     {product.description}
@@ -310,21 +313,21 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                   {/* Harvest & Freshness Tag */}
                   <div className="flex items-center gap-1.5 text-[11px] text-teal-800 bg-teal-50 px-2.5 py-1 rounded-lg mb-3">
                     <Clock className="w-3.5 h-3.5 shrink-0" />
-                    <span className="truncate">Harvested: {product.harvestDate}</span>
+                    <span className="truncate">{t('harvestDate')}: {product.harvestDate}</span>
                   </div>
 
                   {/* Pricing Comparison Snippet */}
                   <div className="bg-stone-50 border border-stone-200/80 rounded-xl p-3 mb-3">
                     <div className="flex items-baseline justify-between mb-1">
                       <div>
-                        <span className="text-[10px] text-stone-400 block uppercase tracking-wider">Farmer Direct Price</span>
+                        <span className="text-[10px] text-stone-400 block uppercase tracking-wider">{t('farmerReceives')}</span>
                         <span className="text-xl font-extrabold text-stone-900">
                           {formatINR(product.pricePerKg)}
                           <span className="text-xs font-normal text-stone-500">/{product.unit}</span>
                         </span>
                       </div>
                       <div className="text-right">
-                        <span className="text-[10px] text-stone-400 block uppercase tracking-wider">Supermarket</span>
+                        <span className="text-[10px] text-stone-400 block uppercase tracking-wider">{t('traditionalRetail')}</span>
                         <span className="text-xs font-bold line-through text-stone-400">
                           {formatINR(product.traditionalRetailPrice)}/{product.unit}
                         </span>
@@ -332,12 +335,12 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                     </div>
 
                     <div className="text-[11px] text-emerald-800 font-semibold flex items-center justify-between pt-1 border-t border-stone-200">
-                      <span>Buyer saves ~{formatINR(product.traditionalRetailPrice - product.pricePerKg - 4)}/{product.unit}</span>
+                      <span>{t('saveVsRetail')} ~{formatINR(product.traditionalRetailPrice - product.pricePerKg - 4)}/{product.unit}</span>
                       <button
                         onClick={() => setExpandedTransparencyId(isExpanded ? null : product.id)}
                         className="text-emerald-700 underline text-[10px] font-bold hover:text-emerald-900 cursor-pointer"
                       >
-                        {isExpanded ? 'Hide Breakdown' : 'See Breakdown'}
+                        {isExpanded ? t('close') : t('priceTransparency')}
                       </button>
                     </div>
                   </div>
@@ -348,7 +351,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                       <PriceTransparencyCard
                         farmerPricePerKg={product.pricePerKg}
                         traditionalRetailPrice={product.traditionalRetailPrice}
-                        productName={product.name}
+                        productName={translatedName}
                         compact={true}
                         mandiBenchmark={product.marketReferencePrice}
                         mandiLocation={`${product.farmerLocation.district} Mandi`}
@@ -363,14 +366,14 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                     onClick={() => onSelectProduct(product)}
                     className="flex-1 py-2 px-3 rounded-xl border border-stone-200 text-stone-700 text-xs font-semibold hover:bg-stone-50 transition-colors text-center cursor-pointer"
                   >
-                    View Details
+                    {t('viewDetails')}
                   </button>
                   <button
                     onClick={() => onAddToCart(product, product.minOrderQuantityKg)}
                     className="py-2 px-4 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold shadow-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
                   >
                     <Plus className="w-3.5 h-3.5" />
-                    <span>Add ({product.minOrderQuantityKg}kg)</span>
+                    <span>{t('addToCart')} ({product.minOrderQuantityKg}kg)</span>
                   </button>
                 </div>
               </div>
@@ -381,3 +384,4 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
     </div>
   );
 };
+

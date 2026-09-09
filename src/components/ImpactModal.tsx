@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { ImpactMetrics } from '../types';
 import { formatINR } from '../utils/pricing';
+import { useLanguage } from '../context/LanguageContext';
 
 interface ImpactModalProps {
   isOpen: boolean;
@@ -24,6 +25,7 @@ export const ImpactModal: React.FC<ImpactModalProps> = ({
   onClose,
   impact
 }) => {
+  const { t } = useLanguage();
   const [householdKgPerWeek, setHouseholdKgPerWeek] = useState<number>(15);
 
   if (!isOpen) return null;
@@ -40,7 +42,7 @@ export const ImpactModal: React.FC<ImpactModalProps> = ({
         <div className="px-6 py-4 border-b border-stone-200 bg-emerald-900 text-white flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Sprout className="w-5 h-5 text-emerald-400" />
-            <h3 className="text-base font-bold">Direct Trade Impact & Transparency Report</h3>
+            <h3 className="text-base font-bold">{t('impactMetrics')}</h3>
           </div>
           <button
             onClick={onClose}
@@ -54,27 +56,27 @@ export const ImpactModal: React.FC<ImpactModalProps> = ({
           {/* Key Aggregate Numbers */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
             <div className="bg-stone-50 border border-stone-200 p-3.5 rounded-2xl">
-              <span className="text-[11px] text-stone-500 font-medium block">Intermediaries Eliminated</span>
-              <span className="text-2xl font-extrabold text-stone-900 mt-1 block">4 Layers</span>
-              <span className="text-[10px] text-emerald-700 font-semibold">Zero Commission Agents</span>
+              <span className="text-[11px] text-stone-500 font-medium block">{t('middlemenCut')}</span>
+              <span className="text-2xl font-extrabold text-stone-900 mt-1 block">0%</span>
+              <span className="text-[10px] text-emerald-700 font-semibold">{t('middlemenEliminatedText')}</span>
             </div>
 
             <div className="bg-emerald-50 border border-emerald-200 p-3.5 rounded-2xl">
-              <span className="text-[11px] text-emerald-800 font-medium block">Farmer Extra Margin</span>
+              <span className="text-[11px] text-emerald-800 font-medium block">{t('fairTradeCertified')}</span>
               <span className="text-2xl font-extrabold text-emerald-950 mt-1 block">+66.4%</span>
-              <span className="text-[10px] text-emerald-700 font-semibold">Net additional income</span>
+              <span className="text-[10px] text-emerald-700 font-semibold">{t('farmerUpliftTotal')}</span>
             </div>
 
             <div className="bg-teal-50 border border-teal-200 p-3.5 rounded-2xl">
-              <span className="text-[11px] text-teal-800 font-medium block">Customer Savings</span>
+              <span className="text-[11px] text-teal-800 font-medium block">{t('consumerRole')}</span>
               <span className="text-2xl font-extrabold text-teal-950 mt-1 block">23.2%</span>
-              <span className="text-[10px] text-teal-700 font-semibold">Saved vs Supermarket</span>
+              <span className="text-[10px] text-teal-700 font-semibold">{t('transparentPricingNotice')}</span>
             </div>
 
             <div className="bg-stone-50 border border-stone-200 p-3.5 rounded-2xl">
-              <span className="text-[11px] text-stone-500 font-medium block">Food Miles Reduced</span>
-              <span className="text-2xl font-extrabold text-stone-900 mt-1 block">-42%</span>
-              <span className="text-[10px] text-stone-500 font-medium">Hyperlocal routing</span>
+              <span className="text-[11px] text-stone-500 font-medium block">{t('foodMilesReduced')}</span>
+              <span className="text-2xl font-extrabold text-stone-900 mt-1 block">{impact.foodMilesReducedKm} km</span>
+              <span className="text-[10px] text-stone-500 font-medium">{t('coldChainLabel')}</span>
             </div>
           </div>
 
@@ -82,16 +84,16 @@ export const ImpactModal: React.FC<ImpactModalProps> = ({
           <div className="bg-stone-50 border border-stone-200 rounded-2xl p-5 space-y-4">
             <div>
               <h4 className="text-sm font-bold text-stone-900">
-                Your Household / Kitchen Direct Impact Calculator
+                {t('impactMetrics')} - Calculator
               </h4>
               <p className="text-xs text-stone-500">
-                Slide your estimated fresh produce consumption to see your annual impact.
+                {t('transparentBreakdownDesc')}
               </p>
             </div>
 
             <div>
               <div className="flex justify-between text-xs font-semibold text-stone-800 mb-1.5">
-                <span>Weekly Produce Consumption:</span>
+                <span>{t('weightKg')}:</span>
                 <span className="font-bold text-emerald-900 text-sm">{householdKgPerWeek} kg / week</span>
               </div>
               <input
@@ -107,15 +109,15 @@ export const ImpactModal: React.FC<ImpactModalProps> = ({
 
             <div className="grid grid-cols-2 gap-3 pt-2 border-t border-stone-200">
               <div className="bg-white p-3 rounded-xl border border-emerald-200 text-center">
-                <span className="text-[11px] text-stone-500 block">Your Annual Grocery Savings</span>
-                <span className="text-lg font-bold text-emerald-900">{formatINR(annualSavings)}</span>
-                <span className="text-[10px] text-emerald-700 block font-semibold">Kept in your wallet</span>
+                <span className="text-[11px] text-stone-500 block">{t('consumerRole')}</span>
+                <span className="text-lg font-bold text-emerald-900">{formatINR(annualSavings)}/yr</span>
+                <span className="text-[10px] text-emerald-700 block font-semibold">{t('appTitle')}</span>
               </div>
 
               <div className="bg-white p-3 rounded-xl border border-emerald-200 text-center">
-                <span className="text-[11px] text-stone-500 block">Additional Direct Farmer Income</span>
-                <span className="text-lg font-bold text-emerald-900">+{formatINR(farmerExtraEarnings)}</span>
-                <span className="text-[10px] text-emerald-700 block font-semibold">Directly to farming family</span>
+                <span className="text-[11px] text-stone-500 block">{t('farmerReceives')}</span>
+                <span className="text-lg font-bold text-emerald-900">+{formatINR(farmerExtraEarnings)}/yr</span>
+                <span className="text-[10px] text-emerald-700 block font-semibold">{t('directChain')}</span>
               </div>
             </div>
           </div>
@@ -123,26 +125,26 @@ export const ImpactModal: React.FC<ImpactModalProps> = ({
           {/* Environmental & Traceability Standard */}
           <div className="space-y-3 text-xs text-stone-600">
             <h4 className="text-xs font-bold text-stone-900 uppercase tracking-wider">
-              How FarmDirect Protects Both Farmer & Consumer
+              {t('fairTradeCertified')}
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="p-3 bg-white border border-stone-200 rounded-xl space-y-1">
                 <span className="font-bold text-stone-900 block flex items-center gap-1">
                   <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                  100% Escrow Protection
+                  {t('escrowSecure')}
                 </span>
                 <p className="text-[11px] text-stone-500">
-                  Payments are locked securely in escrow and released to the farmer upon verified OTP delivery confirmation.
+                  {t('escrowDesc')}
                 </p>
               </div>
 
               <div className="p-3 bg-white border border-stone-200 rounded-xl space-y-1">
                 <span className="font-bold text-stone-900 block flex items-center gap-1">
                   <Truck className="w-4 h-4 text-emerald-600" />
-                  Controlled Cold-Chain Transit
+                  {t('coldChainLabel')}
                 </span>
                 <p className="text-[11px] text-stone-500">
-                  Electric reefer vans eliminate heat damage and post-harvest degradation, cutting transit losses from 24% to 0%.
+                  {t('qualityAssurance')}
                 </p>
               </div>
             </div>
@@ -155,10 +157,11 @@ export const ImpactModal: React.FC<ImpactModalProps> = ({
             onClick={onClose}
             className="px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl transition-colors cursor-pointer"
           >
-            Close & Continue Shopping
+            {t('close')}
           </button>
         </div>
       </div>
     </div>
   );
 };
+

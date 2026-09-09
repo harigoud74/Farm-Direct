@@ -11,6 +11,7 @@ import {
   Sprout
 } from 'lucide-react';
 import { api } from '../services/api';
+import { useLanguage } from '../context/LanguageContext';
 
 interface AIAssistantModalProps {
   isOpen: boolean;
@@ -32,6 +33,7 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
   onClose,
   userRole
 }) => {
+  const { t } = useLanguage();
   const [inputQuery, setInputQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
@@ -105,13 +107,13 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-sm font-bold text-stone-900">FarmDirect AI Agro Assistant</h3>
+                <h3 className="text-sm font-bold text-stone-900">{t('aiAssistant')}</h3>
                 <span className="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">
-                  Grounded in Mandi & Weather Data
+                  {t('mandiIntelligence')}
                 </span>
               </div>
               <p className="text-[11px] text-stone-500">
-                Helping farmers optimize crop selling windows & buyers source fairly
+                {t('mandiSubtitle')}
               </p>
             </div>
           </div>
@@ -168,7 +170,7 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
           {isLoading && (
             <div className="flex items-center gap-2 text-xs text-stone-500 bg-stone-50 border p-3 rounded-2xl max-w-xs">
               <span className="w-2 h-2 rounded-full bg-emerald-600 animate-ping"></span>
-              <span>Analyzing market mandi benchmarks and weather models...</span>
+              <span>{t('evaluatingQuality')}...</span>
             </div>
           )}
         </div>
@@ -203,3 +205,4 @@ export const AIAssistantModal: React.FC<AIAssistantModalProps> = ({
     </div>
   );
 };
+

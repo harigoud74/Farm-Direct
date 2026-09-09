@@ -11,6 +11,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import { WeatherData } from '../types';
+import { useLanguage } from '../context/LanguageContext';
 
 interface WeatherDashboardProps {
   weather: WeatherData;
@@ -21,6 +22,7 @@ export const WeatherDashboard: React.FC<WeatherDashboardProps> = ({
   weather,
   onCityChange
 }) => {
+  const { t } = useLanguage();
   const [selectedDistrict, setSelectedDistrict] = useState(weather.city || 'Kolar');
 
   const districts = ['Kolar', 'Mandya', 'Nashik', 'Guntur'];
@@ -37,13 +39,12 @@ export const WeatherDashboard: React.FC<WeatherDashboardProps> = ({
         <div>
           <div className="flex items-center gap-2">
             <span className="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-0.5 rounded-full">
-              Agro-Meteorological Advisory
+              {t('agronomicAdvisory')}
             </span>
-            <span className="text-xs text-stone-500">Precision Micro-Climate Guidance</span>
           </div>
-          <h2 className="text-xl font-bold text-stone-900 mt-1">Weather & Harvest Timing Radar</h2>
+          <h2 className="text-xl font-bold text-stone-900 mt-1">{t('weatherTitle')}</h2>
           <p className="text-xs text-stone-500">
-            Real-time agro-climatic conditions, rainfall probability, and field operation recommendations.
+            {t('weatherSubtitle')}
           </p>
         </div>
 
@@ -68,7 +69,7 @@ export const WeatherDashboard: React.FC<WeatherDashboardProps> = ({
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
             <span className="text-xs font-semibold text-emerald-300 bg-white/10 px-3 py-1 rounded-full uppercase tracking-wider">
-              {weather.city}, {weather.state} &bull; Active Field Station
+              {weather.city}, {weather.state} &bull; {t('agronomicAdvisory')}
             </span>
             <div className="flex items-baseline gap-4">
               <span className="text-5xl sm:text-6xl font-extrabold tracking-tight">
@@ -78,26 +79,26 @@ export const WeatherDashboard: React.FC<WeatherDashboardProps> = ({
             </div>
 
             <p className="text-xs sm:text-sm text-emerald-100/90 max-w-xl leading-relaxed pt-2">
-              <strong>Agro Advisory:</strong> {weather.advisory}
+              <strong>{t('agronomicAdvisory')}:</strong> {weather.advisory}
             </p>
           </div>
 
           <div className="grid grid-cols-3 gap-3 bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/20 text-xs">
             <div className="text-center p-2">
               <Droplets className="w-5 h-5 text-blue-300 mx-auto mb-1" />
-              <span className="text-[10px] text-emerald-200 block">Humidity</span>
+              <span className="text-[10px] text-emerald-200 block">{t('humidity')}</span>
               <span className="text-base font-bold">{weather.humidityPercent}%</span>
             </div>
 
             <div className="text-center p-2 border-x border-white/10">
               <CloudRain className="w-5 h-5 text-teal-300 mx-auto mb-1" />
-              <span className="text-[10px] text-emerald-200 block">Rain Prob.</span>
+              <span className="text-[10px] text-emerald-200 block">{t('rainProb')}</span>
               <span className="text-base font-bold">{weather.rainProbabilityPercent}%</span>
             </div>
 
             <div className="text-center p-2">
               <Wind className="w-5 h-5 text-emerald-300 mx-auto mb-1" />
-              <span className="text-[10px] text-emerald-200 block">Wind Speed</span>
+              <span className="text-[10px] text-emerald-200 block">{t('windSpeed')}</span>
               <span className="text-base font-bold">{weather.windSpeedKmh} km/h</span>
             </div>
           </div>
@@ -108,7 +109,7 @@ export const WeatherDashboard: React.FC<WeatherDashboardProps> = ({
       <div className="bg-white border border-stone-200 rounded-3xl p-6 shadow-xs space-y-4">
         <h3 className="text-base font-bold text-stone-900 flex items-center gap-2">
           <Calendar className="w-4 h-4 text-emerald-700" />
-          5-Day Agricultural Operational Forecast
+          {t('fiveDayForecast')}
         </h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
@@ -125,7 +126,7 @@ export const WeatherDashboard: React.FC<WeatherDashboardProps> = ({
               </div>
 
               <div className="flex justify-between text-stone-600 text-[11px] bg-white p-2 rounded-xl border border-stone-200">
-                <span>Rain: <strong>{f.rainProbPercent}%</strong></span>
+                <span>{t('rainProb')}: <strong>{f.rainProbPercent}%</strong></span>
                 <span className="truncate">{f.condition}</span>
               </div>
 
@@ -139,3 +140,4 @@ export const WeatherDashboard: React.FC<WeatherDashboardProps> = ({
     </div>
   );
 };
+

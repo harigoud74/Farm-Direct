@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { Product, Order, MarketPrice, BulkRequirement, WeatherData, FarmerProfile } from '../types';
 import { formatINR } from '../utils/pricing';
+import { useLanguage } from '../context/LanguageContext';
 
 interface FarmerDashboardProps {
   farmer: FarmerProfile;
@@ -48,6 +49,7 @@ export const FarmerDashboard: React.FC<FarmerDashboardProps> = ({
   onUpdateOrderStatus,
   onSubmitQuote
 }) => {
+  const { t, translateCrop, translateCategory, translateStatus } = useLanguage();
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedReqForQuote, setSelectedReqForQuote] = useState<BulkRequirement | null>(null);
   const [quotePrice, setQuotePrice] = useState<number>(28);
@@ -147,11 +149,11 @@ export const FarmerDashboard: React.FC<FarmerDashboardProps> = ({
               <h2 className="text-xl font-bold text-stone-900">{farmer.farmName}</h2>
               <span className="bg-emerald-100 text-emerald-800 text-xs font-semibold px-2.5 py-0.5 rounded-full flex items-center gap-1">
                 <CheckCircle className="w-3.5 h-3.5" />
-                Verified Farmer
+                {t('verifiedFarms')}
               </span>
             </div>
             <p className="text-xs text-stone-500 mt-0.5">
-              Owner: <strong>{farmer.name}</strong> &bull; {farmer.address.villageOrCity}, {farmer.address.district} &bull; {farmer.farmSizeAcres} Acres
+              {farmer.name} &bull; {farmer.address.villageOrCity}, {farmer.address.district} &bull; {farmer.farmSizeAcres} Acres
             </p>
           </div>
         </div>
@@ -161,50 +163,50 @@ export const FarmerDashboard: React.FC<FarmerDashboardProps> = ({
           className="px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition-colors flex items-center justify-center gap-2 cursor-pointer self-start md:self-auto"
         >
           <Plus className="w-4 h-4" />
-          <span>List New Harvest Produce</span>
+          <span>{t('addCrop')}</span>
         </button>
       </div>
 
       {/* Top 4 KPI Metrics */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white border border-stone-200 rounded-2xl p-4 shadow-xs">
-          <span className="text-xs text-stone-500 font-medium block">Total Direct Revenue</span>
+          <span className="text-xs text-stone-500 font-medium block">{t('totalEarnings')}</span>
           <div className="text-2xl font-extrabold text-emerald-900 mt-1">
             {formatINR(totalFarmerRevenue || 34200)}
           </div>
           <span className="text-[11px] text-emerald-700 font-semibold block mt-0.5">
-            +66% vs local Mandi commission
+            +66% {t('savingsBanner')}
           </span>
         </div>
 
         <div className="bg-white border border-stone-200 rounded-2xl p-4 shadow-xs">
-          <span className="text-xs text-stone-500 font-medium block">Active Listed Produce</span>
+          <span className="text-xs text-stone-500 font-medium block">{t('activeListings')}</span>
           <div className="text-2xl font-extrabold text-stone-900 mt-1">
-            {farmerProducts.length} Items
+            {farmerProducts.length}
           </div>
           <span className="text-[11px] text-stone-500 block mt-0.5">
-            {farmerProducts.reduce((sum, p) => sum + p.availableQuantityKg, 0)} kg in inventory
+            {farmerProducts.reduce((sum, p) => sum + p.availableQuantityKg, 0)} kg ({t('availableStock')})
           </span>
         </div>
 
         <div className="bg-white border border-stone-200 rounded-2xl p-4 shadow-xs">
-          <span className="text-xs text-stone-500 font-medium block">Orders Awaiting Pickup</span>
+          <span className="text-xs text-stone-500 font-medium block">{t('pendingDispatches')}</span>
           <div className="text-2xl font-extrabold text-amber-900 mt-1">
-            {farmerOrders.filter(o => o.status === 'PAID' || o.status === 'ACCEPTED').length} Orders
+            {farmerOrders.filter(o => o.status === 'PAID' || o.status === 'ACCEPTED').length}
           </div>
           <span className="text-[11px] text-amber-700 font-semibold block mt-0.5">
-            Electric Van dispatch active
+            {t('navLogistics')}
           </span>
         </div>
 
         <div className="bg-white border border-stone-200 rounded-2xl p-4 shadow-xs">
-          <span className="text-xs text-stone-500 font-medium block">Farmer Rating</span>
+          <span className="text-xs text-stone-500 font-medium block">{t('rateProduce')}</span>
           <div className="text-2xl font-extrabold text-stone-900 mt-1 flex items-center gap-1">
             <span>{farmer.rating}</span>
             <span className="text-xs text-stone-400 font-normal">/ 5.0</span>
           </div>
           <span className="text-[11px] text-teal-700 font-semibold block mt-0.5">
-            Top 5% verified in district
+            100% {t('heroBadge')}
           </span>
         </div>
       </div>
@@ -216,19 +218,19 @@ export const FarmerDashboard: React.FC<FarmerDashboardProps> = ({
           <div className="flex items-center justify-between text-blue-900 font-bold text-xs mb-1">
             <span className="flex items-center gap-1.5">
               <CloudRain className="w-4 h-4 text-blue-600" />
-              Agro-Weather Advisory ({weather.city})
+              {t('agronomicAdvisory')} ({weather.city})
             </span>
             <span className="text-[11px] bg-blue-100 px-2 py-0.5 rounded-full">
-              Rain Prob: {weather.rainProbabilityPercent}%
+              {t('rainProb')}: {weather.rainProbabilityPercent}%
             </span>
           </div>
           <p className="text-xs text-blue-950 font-medium mt-1">
             {weather.advisory}
           </p>
           <div className="text-[11px] text-blue-700 mt-2 flex gap-4">
-            <span>Temp: {weather.temperatureC}°C</span>
-            <span>Humidity: {weather.humidityPercent}%</span>
-            <span>Wind: {weather.windSpeedKmh} km/h</span>
+            <span>{t('currentTemp')}: {weather.temperatureC}°C</span>
+            <span>{t('humidity')}: {weather.humidityPercent}%</span>
+            <span>{t('windSpeed')}: {weather.windSpeedKmh} km/h</span>
           </div>
         </div>
 
@@ -237,17 +239,17 @@ export const FarmerDashboard: React.FC<FarmerDashboardProps> = ({
           <div className="flex items-center justify-between text-emerald-950 font-bold text-xs mb-1">
             <span className="flex items-center gap-1.5">
               <Sparkles className="w-4 h-4 text-emerald-600" />
-              AI Harvest & Pricing Intelligence
+              {t('aiAssistantTitle')}
             </span>
             <span className="text-[11px] bg-emerald-200/80 px-2 py-0.5 rounded-full text-emerald-900">
-              Confidence 88%
+              {t('mandiVerifiedNotice')}
             </span>
           </div>
           <p className="text-xs text-emerald-950 font-medium mt-1">
-            {aiInsights[0]?.recommendation || 'Consider scheduling tomato delivery within 2–4 days before anticipated rain disruptions.'}
+            {aiInsights[0]?.recommendation || 'Harvest tomatoes and capsicum early morning for maximum freshness and +15% shelf life.'}
           </p>
           <div className="text-[11px] text-emerald-800 mt-2">
-            Mandi Benchmark: ₹30/kg modal &bull; Recommended Direct Listing: ₹28–₹30/kg
+            {t('mandiPrice')}: ₹30/kg &bull; {t('farmerReceives')}: ₹28–₹30/kg
           </div>
         </div>
       </div>
@@ -257,14 +259,14 @@ export const FarmerDashboard: React.FC<FarmerDashboardProps> = ({
         <div className="flex items-center justify-between pb-4 border-b border-stone-100">
           <h3 className="text-base font-bold text-stone-900 flex items-center gap-2">
             <Package className="w-4 h-4 text-emerald-700" />
-            Active Direct Orders Queue ({farmerOrders.length})
+            {t('ordersToFulfill')} ({farmerOrders.length})
           </h3>
-          <span className="text-xs text-stone-500">Live order status progression</span>
+          <span className="text-xs text-stone-500">{t('ordersToFulfillDesc')}</span>
         </div>
 
         {farmerOrders.length === 0 ? (
           <div className="py-8 text-center text-xs text-stone-500">
-            No incoming orders currently pending fulfillment.
+            {t('emptyCart')}
           </div>
         ) : (
           <div className="divide-y divide-stone-100">
@@ -273,28 +275,22 @@ export const FarmerDashboard: React.FC<FarmerDashboardProps> = ({
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-bold text-stone-900">Order #{order.id}</span>
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${
-                      order.status === 'DELIVERED'
-                        ? 'bg-emerald-100 text-emerald-800'
-                        : order.status === 'PAID'
-                        ? 'bg-amber-100 text-amber-800'
-                        : 'bg-blue-100 text-blue-800'
-                    }`}>
-                      {order.status}
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full uppercase bg-emerald-100 text-emerald-800">
+                      {translateStatus(order.status)}
                     </span>
                     <span className="text-xs text-stone-400">&bull; {order.estimatedDeliveryTime}</span>
                   </div>
                   <p className="text-xs text-stone-600 mt-1">
-                    Buyer: <strong>{order.buyerName}</strong> ({order.shippingAddress.city})
+                    {order.buyerName} ({order.shippingAddress.city})
                   </p>
                   <div className="text-xs text-stone-500 mt-0.5">
-                    Items: {order.items.map(i => `${i.productName} (${i.quantityKg}kg)`).join(', ')}
+                    {order.items.map(i => `${translateCrop(i.productName)} (${i.quantityKg}kg)`).join(', ')}
                   </div>
                 </div>
 
                 <div className="flex items-center gap-3">
                   <div className="text-right">
-                    <span className="text-[10px] text-stone-400 block">Your Earnings</span>
+                    <span className="text-[10px] text-stone-400 block">{t('totalEarnings')}</span>
                     <span className="text-base font-bold text-emerald-900">
                       {formatINR(order.farmerEarnings)}
                     </span>
@@ -305,7 +301,7 @@ export const FarmerDashboard: React.FC<FarmerDashboardProps> = ({
                       onClick={() => onUpdateOrderStatus(order.id, 'ACCEPTED')}
                       className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-semibold cursor-pointer"
                     >
-                      Accept Order
+                      {t('confirm')}
                     </button>
                   )}
                   {order.status === 'ACCEPTED' && (
@@ -313,7 +309,7 @@ export const FarmerDashboard: React.FC<FarmerDashboardProps> = ({
                       onClick={() => onUpdateOrderStatus(order.id, 'READY_FOR_PICKUP')}
                       className="px-3 py-1.5 bg-teal-700 hover:bg-teal-800 text-white rounded-lg text-xs font-semibold cursor-pointer"
                     >
-                      Ready for Pickup
+                      {t('markReadyForPickup')}
                     </button>
                   )}
                 </div>
@@ -328,13 +324,13 @@ export const FarmerDashboard: React.FC<FarmerDashboardProps> = ({
         <div className="flex items-center justify-between pb-4 border-b border-stone-100">
           <h3 className="text-base font-bold text-stone-900 flex items-center gap-2">
             <Sprout className="w-4 h-4 text-emerald-700" />
-            My Active Produce Listings ({farmerProducts.length})
+            {t('myInventory')} ({farmerProducts.length})
           </h3>
           <button
             onClick={() => setShowAddModal(true)}
             className="text-xs text-emerald-700 font-bold hover:underline cursor-pointer"
           >
-            + Add Another Crop
+            + {t('addCrop')}
           </button>
         </div>
 
@@ -342,25 +338,25 @@ export const FarmerDashboard: React.FC<FarmerDashboardProps> = ({
           <table className="w-full text-left text-xs text-stone-600 mt-2">
             <thead className="bg-stone-50 text-stone-500 uppercase tracking-wider text-[10px] border-b border-stone-200">
               <tr>
-                <th className="py-3 px-3">Crop / Produce</th>
-                <th className="py-3 px-3">Category</th>
-                <th className="py-3 px-3">Your Rate (₹/kg)</th>
-                <th className="py-3 px-3">Market Mandi Benchmark</th>
-                <th className="py-3 px-3">Available Stock (kg)</th>
-                <th className="py-3 px-3 text-right">Actions</th>
+                <th className="py-3 px-3">{t('cropNameLabel')}</th>
+                <th className="py-3 px-3">{t('categoryLabel')}</th>
+                <th className="py-3 px-3">{t('pricePerKgLabel')}</th>
+                <th className="py-3 px-3">{t('mandiPrice')}</th>
+                <th className="py-3 px-3">{t('quantityKgLabel')}</th>
+                <th className="py-3 px-3 text-right">{t('actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-stone-100">
               {farmerProducts.map(p => (
                 <tr key={p.id} className="hover:bg-stone-50/60">
                   <td className="py-3 px-3 font-bold text-stone-900 flex items-center gap-2">
-                    <img src={p.images[0]} alt={p.name} className="w-8 h-8 rounded-lg object-cover" />
+                    <img src={p.images[0]} alt={translateCrop(p.name)} className="w-8 h-8 rounded-lg object-cover" />
                     <div>
-                      <div>{p.name}</div>
+                      <div>{translateCrop(p.name)}</div>
                       <span className="text-[10px] text-stone-400 font-normal">{p.variety}</span>
                     </div>
                   </td>
-                  <td className="py-3 px-3 font-medium">{p.category}</td>
+                  <td className="py-3 px-3 font-medium">{translateCategory(p.category)}</td>
                   <td className="py-3 px-3 font-bold text-emerald-900 text-sm">
                     {formatINR(p.pricePerKg)}/{p.unit}
                   </td>
@@ -372,14 +368,14 @@ export const FarmerDashboard: React.FC<FarmerDashboardProps> = ({
                       <span className="font-semibold text-stone-800">{p.availableQuantityKg} kg</span>
                       <button
                         onClick={() => {
-                          const newQty = prompt('Enter updated available inventory (kg):', p.availableQuantityKg.toString());
+                          const newQty = prompt(`${t('adjustStock')} (kg):`, p.availableQuantityKg.toString());
                           if (newQty && !isNaN(Number(newQty))) {
                             onUpdateStock(p.id, Number(newQty));
                           }
                         }}
                         className="text-[10px] text-emerald-700 font-bold hover:underline cursor-pointer"
                       >
-                        Adjust
+                        {t('adjustStock')}
                       </button>
                     </div>
                   </td>
@@ -387,7 +383,7 @@ export const FarmerDashboard: React.FC<FarmerDashboardProps> = ({
                     <button
                       onClick={() => onDeleteProduct(p.id)}
                       className="text-stone-400 hover:text-red-600 p-1 cursor-pointer"
-                      title="Delete produce"
+                      title={t('delete')}
                     >
                       <Trash2 className="w-4 h-4 inline" />
                     </button>
@@ -404,14 +400,14 @@ export const FarmerDashboard: React.FC<FarmerDashboardProps> = ({
         <div className="flex items-center justify-between pb-4 border-b border-stone-100">
           <div>
             <h3 className="text-base font-bold text-stone-900">
-              Restaurant & Institutional Bulk Procurement Requests
+              {t('b2bLeadsTitle')}
             </h3>
             <p className="text-xs text-stone-500">
-              Sell high-volume harvest directly to restaurants and supermarkets without APMC commission agents.
+              {t('b2bLeadsSubtitle')}
             </p>
           </div>
           <span className="text-xs font-bold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-lg">
-            {bulkRequirements.length} Open Requests
+            {bulkRequirements.length} {t('activeTenders')}
           </span>
         </div>
 
@@ -421,20 +417,20 @@ export const FarmerDashboard: React.FC<FarmerDashboardProps> = ({
               <div className="flex items-start justify-between">
                 <div>
                   <span className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider bg-emerald-100 px-2 py-0.5 rounded">
-                    {req.productName}
+                    {translateCrop(req.productName)}
                   </span>
                   <h4 className="text-sm font-bold text-stone-900 mt-1">{req.businessName}</h4>
                   <span className="text-xs text-stone-500">{req.businessType} &bull; {req.deliveryLocation}</span>
                 </div>
                 <div className="text-right">
-                  <span className="text-[10px] text-stone-400 block">Target Rate</span>
+                  <span className="text-[10px] text-stone-400 block">{t('targetPrice')}</span>
                   <span className="text-sm font-bold text-stone-900">{formatINR(req.targetPricePerKg)}/kg</span>
                 </div>
               </div>
 
               <div className="flex justify-between text-xs text-stone-600 py-2 border-y border-stone-200">
-                <span>Quantity Required: <strong>{req.quantityRequiredKg} kg</strong></span>
-                <span>Delivery: <strong>{req.deliveryDateRequired}</strong></span>
+                <span>{t('quantityRequired')}: <strong>{req.quantityRequiredKg} kg</strong></span>
+                <span>{t('deliveryDeadline')}: <strong>{req.deliveryDateRequired}</strong></span>
               </div>
 
               <button
@@ -445,7 +441,7 @@ export const FarmerDashboard: React.FC<FarmerDashboardProps> = ({
                 }}
                 className="w-full py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer"
               >
-                Submit Farmer Quotation
+                {t('submitQuote')}
               </button>
             </div>
           ))}
@@ -457,19 +453,19 @@ export const FarmerDashboard: React.FC<FarmerDashboardProps> = ({
         <div className="fixed inset-0 z-50 bg-stone-900/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white w-full max-w-lg rounded-3xl p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b pb-3">
-              <h3 className="text-base font-bold text-stone-900">List New Farm Harvest Produce</h3>
-              <button onClick={() => setShowAddModal(false)} className="text-stone-400 hover:text-stone-700">
+              <h3 className="text-base font-bold text-stone-900">{t('addCrop')}</h3>
+              <button onClick={() => setShowAddModal(false)} className="text-stone-400 hover:text-stone-700 cursor-pointer text-lg">
                 &times;
               </button>
             </div>
 
             <form onSubmit={handleCreateProduct} className="space-y-3 text-xs">
               <div>
-                <label className="block text-stone-600 font-medium mb-1">Produce Name</label>
+                <label className="block text-stone-600 font-medium mb-1">{t('cropNameLabel')}</label>
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Shivam Hybrid Tomatoes"
+                  placeholder="e.g. Desi Country Tomatoes"
                   value={newProductName}
                   onChange={e => setNewProductName(e.target.value)}
                   className="w-full p-2.5 border border-stone-300 rounded-xl"
@@ -478,7 +474,7 @@ export const FarmerDashboard: React.FC<FarmerDashboardProps> = ({
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-stone-600 font-medium mb-1">Variety</label>
+                  <label className="block text-stone-600 font-medium mb-1">{t('varietyLabel')}</label>
                   <input
                     type="text"
                     placeholder="e.g. Grade A Hybrid"
@@ -488,24 +484,24 @@ export const FarmerDashboard: React.FC<FarmerDashboardProps> = ({
                   />
                 </div>
                 <div>
-                  <label className="block text-stone-600 font-medium mb-1">Category</label>
+                  <label className="block text-stone-600 font-medium mb-1">{t('categoryLabel')}</label>
                   <select
                     value={newCategory}
                     onChange={e => setNewCategory(e.target.value)}
                     className="w-full p-2.5 border border-stone-300 rounded-xl cursor-pointer"
                   >
-                    <option value="Vegetables">Vegetables</option>
-                    <option value="Fruits">Fruits</option>
-                    <option value="Grains & Pulses">Grains & Pulses</option>
-                    <option value="Spices & Herbs">Spices & Herbs</option>
-                    <option value="Dairy & Honey">Dairy & Honey</option>
+                    <option value="Vegetables">{t('vegetables')}</option>
+                    <option value="Fruits">{t('fruits')}</option>
+                    <option value="Grains & Pulses">{t('grains')}</option>
+                    <option value="Spices & Herbs">{t('spices')}</option>
+                    <option value="Dairy & Honey">{t('dairy')}</option>
                   </select>
                 </div>
               </div>
 
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-stone-600 font-medium mb-1">Your Price (₹/kg)</label>
+                  <label className="block text-stone-600 font-medium mb-1">{t('pricePerKgLabel')}</label>
                   <input
                     type="number"
                     required
@@ -515,7 +511,7 @@ export const FarmerDashboard: React.FC<FarmerDashboardProps> = ({
                   />
                 </div>
                 <div>
-                  <label className="block text-stone-600 font-medium mb-1">Retail Store Est. (₹)</label>
+                  <label className="block text-stone-600 font-medium mb-1">{t('traditionalRetail')} (₹)</label>
                   <input
                     type="number"
                     value={newRetailPrice}
@@ -524,7 +520,7 @@ export const FarmerDashboard: React.FC<FarmerDashboardProps> = ({
                   />
                 </div>
                 <div>
-                  <label className="block text-stone-600 font-medium mb-1">Stock (kg)</label>
+                  <label className="block text-stone-600 font-medium mb-1">{t('quantityKgLabel')}</label>
                   <input
                     type="number"
                     required
@@ -536,7 +532,7 @@ export const FarmerDashboard: React.FC<FarmerDashboardProps> = ({
               </div>
 
               <div>
-                <label className="block text-stone-600 font-medium mb-1">Photo Preview URL</label>
+                <label className="block text-stone-600 font-medium mb-1">Image URL</label>
                 <input
                   type="text"
                   value={newImageUrl}
@@ -549,15 +545,15 @@ export const FarmerDashboard: React.FC<FarmerDashboardProps> = ({
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="px-4 py-2 border rounded-xl"
+                  className="px-4 py-2 border rounded-xl cursor-pointer"
                 >
-                  Cancel
+                  {t('cancel')}
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-emerald-700 text-white rounded-xl font-bold"
+                  className="px-5 py-2 bg-emerald-700 text-white rounded-xl font-bold cursor-pointer"
                 >
-                  Publish Listing
+                  {t('save')}
                 </button>
               </div>
             </form>
@@ -570,15 +566,15 @@ export const FarmerDashboard: React.FC<FarmerDashboardProps> = ({
         <div className="fixed inset-0 z-50 bg-stone-900/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl space-y-4">
             <h3 className="text-base font-bold text-stone-900">
-              Submit Quotation for {selectedReqForQuote.productName}
+              {t('submitQuote')}: {translateCrop(selectedReqForQuote.productName)}
             </h3>
             <p className="text-xs text-stone-500">
-              Buyer: <strong>{selectedReqForQuote.businessName}</strong> &bull; Total Required: {selectedReqForQuote.quantityRequiredKg} kg
+              {selectedReqForQuote.businessName} &bull; {t('quantityRequired')}: {selectedReqForQuote.quantityRequiredKg} kg
             </p>
 
             <form onSubmit={handleSendQuote} className="space-y-3 text-xs">
               <div>
-                <label className="block text-stone-600 font-medium mb-1">Your Offered Price (₹/kg)</label>
+                <label className="block text-stone-600 font-medium mb-1">{t('quotePricePerKg')}</label>
                 <input
                   type="number"
                   value={quotePrice}
@@ -588,7 +584,7 @@ export const FarmerDashboard: React.FC<FarmerDashboardProps> = ({
               </div>
 
               <div>
-                <label className="block text-stone-600 font-medium mb-1">Offered Quantity (kg)</label>
+                <label className="block text-stone-600 font-medium mb-1">{t('quoteQuantityKg')}</label>
                 <input
                   type="number"
                   value={quoteQuantity}
@@ -601,15 +597,15 @@ export const FarmerDashboard: React.FC<FarmerDashboardProps> = ({
                 <button
                   type="button"
                   onClick={() => setSelectedReqForQuote(null)}
-                  className="px-4 py-2 border rounded-xl"
+                  className="px-4 py-2 border rounded-xl cursor-pointer"
                 >
-                  Cancel
+                  {t('cancel')}
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-emerald-700 text-white rounded-xl font-bold"
+                  className="px-5 py-2 bg-emerald-700 text-white rounded-xl font-bold cursor-pointer"
                 >
-                  Submit Quote
+                  {t('submitQuote')}
                 </button>
               </div>
             </form>
